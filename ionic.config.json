@@ -1,0 +1,7 @@
+{
+  "name": "firebase-demo-app",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}

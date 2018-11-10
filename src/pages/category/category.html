@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Categories</ion-title>
+    <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="setFilteredItems()"></ion-searchbar>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <form [formGroup]="categoryForm" (submit)="createNewEntry()" novalidate>
+    <ion-item>
+      <ion-label stacked>Category Name</ion-label>
+      <ion-input formControlName="categoryName" type="text"
+                 placeholder="Work">
+      </ion-input>
+    </ion-item>
+
+    <button ion-button block type="submit" [disabled]="!categoryForm.valid">
+      Add Category
+    </button>
+  </form>
+
+  <ion-list>
+    <ion-item *ngFor="let category of categoryList" (click)="goToCategoryDetails(category)">
+      <h2>{{category?.name}}</h2>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

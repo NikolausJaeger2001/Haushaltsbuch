@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Bookings</ion-title>
+    <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="setFilteredItems()"></ion-searchbar>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <form #form="ngForm" (ngSubmit)="onSubmit(form)">
+    <ion-item>
+      <ion-label stacked>Account</ion-label>
+      <ion-select [(ngModel)]="accountId"
+                  name="accountId" placeholder="Household" >
+        <ion-option *ngFor="let c of accountList" [value]="c.name">{{c.name}}</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked>Category</ion-label>
+      <ion-select [(ngModel)]="categories" name="categories" placeholder="Work, Computer" multiple>
+        <ion-option *ngFor="let c of categoryList" [value]="c.name">{{c.name}}</ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>Comment</ion-label>
+      <ion-input type="text" [(ngModel)]="comment" name="comment" placeholder="New Monitor for Homeoffice" required=""></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>Amount</ion-label>
+      <ion-input type="number" ngModel name="amount" placeholder="125.99" [disabled]="!accountId"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>Date</ion-label>
+      <ion-datetime displayFormat="DDDD, D. MMMM, YYYY" pickerFormat="DD MMMM YYYY"
+                    ngModel name="date" placeholder="15.10.2018"></ion-datetime>
+    </ion-item>
+
+    <button ion-button block [disabled]="!form.valid">Submit</button>
+  </form>
+
+  <ion-list>
+    <ion-item *ngFor="let booking of bookingList" (click)="goToBookingDetails(booking)">
+      <ion-badge color="primary">{{ booking?.accountId }}</ion-badge>
+      <h2>{{booking?.comment}}</h2>
+      <p>{{booking?.date | date:'fullDate'}}</p>
+      <p>{{booking?.amount | currency:'EUR':'symbol'}}</p>
+      <ion-badge *ngFor="let c of booking?.categories" >{{ booking?.categories }}</ion-badge>
+    </ion-item>
+  </ion-list>
+</ion-content>
