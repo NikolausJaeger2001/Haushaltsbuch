@@ -8,8 +8,8 @@ import {CategoryPage} from "../category/category";
 })
 export class TabsPage {
 
-  tab1Root = AccountPage;
-  tab2Root = BookingPage;
+  tab1Root = BookingPage;
+  tab2Root = AccountPage;
   tab3Root = CategoryPage;
   tab4Root = BookingPage;
 

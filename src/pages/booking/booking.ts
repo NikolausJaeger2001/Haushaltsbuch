@@ -29,7 +29,7 @@ export class BookingPage {
     formBuilder: FormBuilder) {
 
     //get accountList
-    this.getAccountList();
+    //this.getAccountList();
 
     //get cateoryList
     //this.getCategoryList();
@@ -52,7 +52,7 @@ export class BookingPage {
         Validators.compose([Validators.required])
       ]
     });
-    MyApp
+    //MyApp
   }
 
   //load accounts from database
@@ -78,7 +78,7 @@ export class BookingPage {
   }
 
   //load categories from database
-/*  getCategoryList() {
+  getCategoryList() {
     this.categoryProvider.getCategoryList().on("value", categoryListSnapshot => {
       this.categoryList = [];
       categoryListSnapshot.forEach(cs => {
@@ -96,10 +96,12 @@ export class BookingPage {
         }
       );
     });
-  }*/
+  }
 
   //load list on load
   ionViewDidLoad() {
+    this.getAccountList();
+    this.getCategoryList();
     this.bookingProvider.getBookingList().on("value", bookingListSnapshot => {
       this.bookingList = [];
       bookingListSnapshot.forEach(bs => {
