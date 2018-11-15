@@ -1,5 +1,6 @@
 import {FormControl} from "@angular/forms";
 
+// this Validator checks if Control Value is Valid Email
 export class EmailValidator {
   constructor() {}
 

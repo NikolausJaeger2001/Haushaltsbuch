@@ -1,14 +1,15 @@
+// Account Entry Class for the different Accounts
 export class AccountEntry {
-  id: string;
+  key: string;
   name: string;
   description: string;
 
   constructor (
-    id: string,
+    key: string,
     name: string,
     description: string
   ) {
-    this.id = id;
+    this.key = key;
     this.name = name;
     this.description = description;
   };

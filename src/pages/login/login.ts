@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {Alert, AlertController, IonicPage, Loading, LoadingController, NavController, NavParams} from 'ionic-angular';
+import {Alert, AlertController, IonicPage, Loading, LoadingController, NavController} from 'ionic-angular';
 import {SignupPage} from "../signup/signup";
 import {ResetPasswordPage} from "../reset-password/reset-password";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
@@ -19,18 +19,18 @@ import {BookingPage} from "../booking/booking";
   selector: 'page-login',
   templateUrl: 'login.html',
 })
+
+// Login Page Class
 export class LoginPage {
-
-
   public loginForm: FormGroup;
   public loading: Loading;
-
 
   constructor(public navCtrl: NavController,
               public loadingCtrl: LoadingController,
               public alertCtrl: AlertController,
               public authProvider: AuthProvider,
               formBuilder: FormBuilder) {
+    // Declare Login Form with Validators
     this.loginForm = formBuilder.group({
       email: [
         '',
@@ -43,25 +43,19 @@ export class LoginPage {
     });
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
-  }
-
+  // Open Sing Up Page
   goToSignup() {
     this.navCtrl.push(SignupPage);
   }
 
+  // Open Reset Password Page
   goToResetPassword() {
     this.navCtrl.push(ResetPasswordPage);
   }
 
-
+  // Login User with the Form Input
   loginUser(): void {
-    if (!this.loginForm.valid) {
-      console.log(
-        `Form is not valid yet, current value: ${this.loginForm.value}`
-      );
-    } else {
+    if (this.loginForm.valid) {
       const email = this.loginForm.value.email;
       const password = this.loginForm.value.password;
 

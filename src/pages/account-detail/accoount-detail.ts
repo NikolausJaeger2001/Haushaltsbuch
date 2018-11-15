@@ -16,21 +16,25 @@ import {AccountPage} from "../account/account";
   selector: 'page-movie-detail',
   templateUrl: 'account-detail.html',
 })
+
+// Account Detail Page Class
 export class AccountDetailPage {
 
   account: AccountEntry;
   backdrop: string;
 
   constructor(public navCtrl: NavController,
-              public loadingCtrl: LoadingController,
               public navParams: NavParams,
               private accountProvider: AccountProvider,
   ) {
     this.account = this.navParams.data;
   }
 
-  deleteAccount(account: AccountEntry){
-    this.accountProvider.removeAccountEntry(account);
+  // Delete Account from List and Database
+  // Existing Booking remains untouched
+  deleteAccount(){
+    console.log(this.account);
+    this.accountProvider.removeAccountEntry(this.account);
     this.navCtrl.push(AccountPage);
   }
 

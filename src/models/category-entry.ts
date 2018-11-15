@@ -1,12 +1,13 @@
+// Category Entry Class for the Categories of a Booking
 export class CategoryEntry {
-  id: string;
+  key: string;
   name: string;
 
   constructor (
-    id: string,
+    key: string,
     name: string
   ) {
-    this.id = id;
+    this.key = key;
     this.name = name;
   };
 }

@@ -6,7 +6,6 @@ import { StatusBar } from '@ionic-native/status-bar';
 
 import { MyApp } from './app.component';
 import { AuthProvider } from '../providers/auth/auth';
-import {Camera} from "@ionic-native/camera";
 import {HttpClientModule} from "@angular/common/http";
 import {LoginPageModule} from "../pages/login/login.module";
 import {SignupPageModule} from "../pages/signup/signup.module";
@@ -62,7 +61,6 @@ registerLocaleData(localeDeAt, localeDeAtExtra);
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     AuthProvider,
-    Camera,
     {
       provide: LOCALE_ID,
       useValue: 'de-AT'

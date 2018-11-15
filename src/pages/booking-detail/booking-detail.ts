@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import {IonicPage, LoadingController, NavController, NavParams} from 'ionic-angular';
-import { Storage } from '@ionic/storage';
+import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {BookingProvider} from "../../providers/booking/booking";
 import {BookingEntry} from "../../models/booking-entry";
 import {AccountEntry} from "../../models/account-entry";
-import {AccountProvider} from "../../providers/account/account";
 import {BookingPage} from "../booking/booking";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {CategoryEntry} from "../../models/category-entry";
+import {AmountValidator} from "../../validators/amount";
 
 /**
  * Generated class for the MovieDetailPage page.
@@ -19,53 +20,70 @@ import {BookingPage} from "../booking/booking";
   selector: 'page-movie-detail',
   templateUrl: 'booking-detail.html',
 })
-export class BookingDetailPage {
 
+// Booking Detail, Change and Delete Page Class
+export class BookingDetailPage {
   booking: BookingEntry;
+  public bookingForm: FormGroup;
   public accountList: AccountEntry[];
-  backdrop: string;
+  public categoryList: CategoryEntry[];
 
   constructor(public navCtrl: NavController,
-              public loadingCtrl: LoadingController,
               public navParams: NavParams,
               private bookingProvider: BookingProvider,
-              public accountProvider: AccountProvider,
+              formBuilder: FormBuilder
   ) {
-    this.getAccountList();
-    this.booking = this.navParams.data;
-  }
+    // All Data are send by the caller
+    this.booking = this.navParams.data.booking;
+    this.accountList = this.navParams.data.accountList;
+    this.categoryList = this.navParams.data.categoryList;
 
-  getAccountList() {
-    this.accountProvider.getAccountList().on("value", personListSnapshot => {
-      this.accountList = [];
-      personListSnapshot.forEach(personSnapshot => {
-        //console.log(personSnapshot.val().name + ' ' + personSnapshot.val().amount);
-        this.accountList.push(
-          new AccountEntry(
-            personSnapshot.key,
-            personSnapshot.val().name,
-            personSnapshot.val().description)
-        );
-      });
-      this.accountList = this.accountList.sort(
-        function (a, b) {
-          if (a.name < b.name) return 1;
-          if (a.name > b.name) return -1;
-          return 0;
-        }
-      );
-      //console.log(this.accountList);
+    // declare Booking FormGroup with Validators
+    this.bookingForm = formBuilder.group({
+      accountId: [
+        this.booking.accountId,
+        Validators.compose([Validators.required])
+      ],
+      categories: [
+        this.booking.categories
+      ],
+      comment: [
+        this.booking.comment,
+        Validators.compose([Validators.required, Validators.minLength(3)])
+      ],
+      amount: [
+        this.booking.amount,
+        Validators.compose([Validators.required, AmountValidator.isValid])
+      ],
+      date: [
+        this.booking.date,
+        Validators.compose([Validators.required])
+      ]
     });
   }
 
-  saveBooking(booking: BookingEntry){
-    this.bookingProvider.updateBookingEntry(booking);
-    this.navCtrl.push(BookingPage);
+  // save the Booking Changes to the Database
+  saveBooking(){
+    this.booking.accountId = this.bookingForm.value.accountId;
+    this.booking.categories = this.bookingForm.value.categories;
+    this.booking.comment = this.bookingForm.value.comment;
+    this.booking.amount = this.bookingForm.value.amount;
+    this.booking.date = this.bookingForm.value.date;
+
+    this.bookingProvider
+      .updateBookingEntry(this.booking)
+      .then(() => {
+        this.navCtrl.push(BookingPage);
+      });
   }
 
-  deleteBooking(booking: BookingEntry){
-    this.bookingProvider.removeBookingEntry(booking)
-    this.navCtrl.push(BookingPage);
+  // remove a booking from the List and the Database
+  deleteBooking(){
+    this.bookingProvider
+      .removeBookingEntry(this.booking)
+      .then(() => {
+        this.navCtrl.push(BookingPage);
+      });
   }
 
 }

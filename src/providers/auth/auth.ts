@@ -5,35 +5,18 @@ import 'firebase/auth';
 import 'firebase/database';
 
 
-/*
-  Generated class for the AuthProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
+// this Class handles user management and authentification at the firebase database
 @Injectable()
 export class AuthProvider {
-
   constructor(public http: HttpClient) {
-    console.log('Hello AuthProvider Provider');
   }
 
+  // login function
   loginUser(email: string, password: string): Promise<any> {
-    /*
-    const userCredential: Promise<fireBaseApp.auth.UserCredential> = fireBaseApp.auth().signInWithEmailAndPassword(email,password);
-    if (userCredential) {
-      const userId: string = fireBaseApp.auth().currentUser.uid;;
-      fireBaseApp
-        .database()
-        .ref(`/user/${userId}`)
-        .off();
-    }
-    return userCredential;
-    */
     return fireBaseApp.auth().signInWithEmailAndPassword(email,password);
   }
 
-
+  // logout function
   logoutUser(): Promise<void> {
     const userId: string = fireBaseApp.auth().currentUser.uid;
     fireBaseApp
@@ -43,6 +26,7 @@ export class AuthProvider {
     return fireBaseApp.auth().signOut();
   }
 
+  // creates a new User
   signupUser(email: string, password: string): Promise<any> {
     return fireBaseApp
       .auth()
@@ -59,6 +43,7 @@ export class AuthProvider {
       });
   }
 
+  // resets User Password
   resetPassword(email:string): Promise<void> {
     return fireBaseApp.auth().sendPasswordResetEmail(email);
   }

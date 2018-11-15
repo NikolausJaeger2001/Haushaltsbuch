@@ -1,58 +1,65 @@
 import {Component} from '@angular/core';
 import {NavController} from 'ionic-angular';
 import {BookingEntry} from "../../models/booking-entry";
-import {FormBuilder, FormGroup, NgForm, Validators} from "@angular/forms";
-import {MyApp} from "../../app/app.component";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {BookingProvider} from "../../providers/booking/booking";
 import {AccountProvider} from "../../providers/account/account";
 import {AccountEntry} from "../../models/account-entry";
 import {BookingDetailPage} from "../booking-detail/booking-detail";
 import {CategoryProvider} from "../../providers/category/category";
 import {CategoryEntry} from "../../models/category-entry";
+import {AmountValidator} from "../../validators/amount";
 
 @Component({
   selector: 'page-booking',
   templateUrl: 'booking.html'
 })
+
+// Booking Page for Insert New and list Existing
 export class BookingPage {
   public bookingForm: FormGroup;
+  public bookingListFull: BookingEntry[];
   public bookingList: BookingEntry[];
   public accountList: AccountEntry[];
   public categoryList: CategoryEntry[];
-  searchTerm : any ="";
+  searchTerm: any = "";
 
   constructor(
     public navCtrl: NavController,
     public bookingProvider: BookingProvider,
     public accountProvider: AccountProvider,
     public categoryProvider: CategoryProvider,
-    formBuilder: FormBuilder) {
-
-    //get accountList
-    //this.getAccountList();
-
-    //get cateoryList
-    //this.getCategoryList();
-
+    formBuilder: FormBuilder
+  ) {
+    // Declare Booking Form Group with Validators
     this.bookingForm = formBuilder.group({
-      comment: [
-        '',
-        Validators.compose([Validators.required])
-      ],
-      date: [
-        '',
-        Validators.compose([Validators.required])
-      ],
-      amount: [
-        '',
-        Validators.compose([Validators.required])
-      ],
       accountId: [
         '',
         Validators.compose([Validators.required])
+      ],
+      categories: [
+        ''
+      ],
+      comment: [
+        '',
+        Validators.compose([Validators.required, Validators.minLength(3)] )
+      ],
+      amount: [
+        '',
+        Validators.compose([Validators.required, AmountValidator.isValid])
+      ],
+      date: [
+        new Date().toISOString(),
+        Validators.compose([Validators.required])
       ]
     });
-    //MyApp
+  }
+
+  //load list on load
+  ionViewDidLoad() {
+    this.getAccountList();
+    this.getCategoryList();
+    this.getBookingList();
   }
 
   //load accounts from database
@@ -96,16 +103,14 @@ export class BookingPage {
         }
       );
     });
-  }
+  };
 
-  //load list on load
-  ionViewDidLoad() {
-    this.getAccountList();
-    this.getCategoryList();
+  //load Bookings from database
+  getBookingList() {
     this.bookingProvider.getBookingList().on("value", bookingListSnapshot => {
-      this.bookingList = [];
+      this.bookingListFull = [];
       bookingListSnapshot.forEach(bs => {
-        this.bookingList.push(
+        this.bookingListFull.push(
           new BookingEntry(
             bs.key,
             bs.val().accountId,
@@ -113,55 +118,56 @@ export class BookingPage {
             bs.val().comment,
             bs.val().amount,
             bs.val().categories
-            )
+          )
         );
       });
-      this.bookingList = this.bookingList.sort(
+      this.bookingListFull = this.bookingListFull.sort(
         function (a, b) {
           if (a.date < b.date) return 1;
           if (a.date > b.date) return -1;
           return 0;
         }
       );
+      this.bookingList = this.bookingListFull;
     });
   }
 
   //open details page of selected booking
   goToBookingDetails(booking: BookingEntry) {
-    this.navCtrl.push(BookingDetailPage, booking);
+    this.navCtrl.push(BookingDetailPage,
+      {
+        booking: booking,
+        accountList: this.accountList,
+        categoryList: this.categoryList
+      });
   }
 
   //apply filter to list
   setFilteredItems() {
-    if(this.searchTerm.length > 0)
-    {
-      this.bookingList = this.bookingList.filter(item =>item.comment.toLowerCase().includes(this.searchTerm.toLowerCase())
-                                                                 || item.accountId.toLowerCase().includes(this.searchTerm.toLowerCase())
-                                                                 || item.date.toLowerCase().includes(this.searchTerm.toLowerCase()));
-      console.log(this.bookingList);
+    if (this.searchTerm.length > 0) {
+      this.bookingList = this.bookingListFull
+        .filter(booking => booking.containsText(this.searchTerm));
     }
-    else
-    {
-      //Reload data
-      this.ionViewDidLoad();
+    else {
+      this.bookingList = this.bookingListFull;
     }
   }
 
   //create new BookingEntry
   //insert new entry into firebase database
-  onSubmit(myForm: NgForm) {
+  insertBookingEntry() {
     this.bookingProvider.addBookingEntry(
       new BookingEntry(
         '',
-        myForm.form.controls.accountId.value,
-        myForm.form.controls.date.value,
-        myForm.form.controls.comment.value,
-        myForm.form.controls.amount.value,
-        []
-        //myForm.form.controls.categories.value
+        this.bookingForm.value.accountId,
+        this.bookingForm.value.date,
+        this.bookingForm.value.comment,
+        this.bookingForm.value.amount,
+        this.bookingForm.value.categories
       )
-    );
-
-    console.log(myForm);
+    ).then(() => {
+      this.bookingForm.reset();
+      this.bookingForm.value.date = new Date().toISOString();
+    });
   }
 }

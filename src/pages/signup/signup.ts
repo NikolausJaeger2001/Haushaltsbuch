@@ -1,26 +1,21 @@
 import {Component} from '@angular/core';
-import {Alert, AlertController, IonicPage, Loading, LoadingController, NavController, NavParams} from 'ionic-angular';
+import {Alert, AlertController, IonicPage, Loading, LoadingController, NavController} from 'ionic-angular';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthProvider} from "../../providers/auth/auth";
 import {EmailValidator} from "../../validators/email";
 import {ResetPasswordPage} from "../reset-password/reset-password";
 import {LoginPage} from "../login/login";
-import {BookingPage} from "../booking/booking";
+import {TabsPage} from "../tabs/tabs";
 
-/**
- * Generated class for the SignupPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
   selector: 'page-signup',
   templateUrl: 'signup.html',
 })
-export class SignupPage {
 
+// Sign Up Page Class
+export class SignupPage {
   public signupForm: FormGroup;
   public loading: Loading;
 
@@ -31,6 +26,7 @@ export class SignupPage {
     public alertCtrl: AlertController,
     formBuilder: FormBuilder
   ) {
+    // Declare SignUp From with Field Validators
     this.signupForm = formBuilder.group({
       email: [
         "",
@@ -43,12 +39,9 @@ export class SignupPage {
     });
   }
 
+  // Create a new User
   signupUser(): void {
-    if (!this.signupForm.valid) {
-      console.log(
-        `Need to complete the form, current value: ${this.signupForm.value}`
-      );
-    } else {
+    if (this.signupForm.valid) {
       const email: string = this.signupForm.value.email;
       const password: string = this.signupForm.value.password;
 
@@ -56,7 +49,7 @@ export class SignupPage {
         user => {
           this.loading.dismiss().then(() => {
             // @ts-ignore
-            this.navCtrl.setRoot(BookingPage);
+            this.navCtrl.setRoot(TabsPage);
           });
         },
         error => {
@@ -74,17 +67,13 @@ export class SignupPage {
     }
   }
 
-
+  // go To Login Page
   goToLogin() {
     this.navCtrl.push(LoginPage);
   }
 
+  // go to Reset Password Page
   goToResetPassword() {
     this.navCtrl.push(ResetPasswordPage);
   }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad SignupPage');
-  }
-
 }

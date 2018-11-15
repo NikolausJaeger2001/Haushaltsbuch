@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {NavController} from 'ionic-angular';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {MyApp} from "../../app/app.component";
 import {AccountProvider} from "../../providers/account/account";
 import {AccountEntry} from "../../models/account-entry";
 import {AccountDetailPage} from "../account-detail/accoount-detail";
@@ -10,17 +9,20 @@ import {AccountDetailPage} from "../account-detail/accoount-detail";
   selector: 'page-account',
   templateUrl: 'account.html'
 })
-export class AccountPage {
 
+// Category List and Insert Page Class
+export class AccountPage {
   public accountForm: FormGroup;
   public accountList: AccountEntry[];
-  searchTerm : any ="";
+  public accountListFull: AccountEntry[];
+  searchTerm: any = "";
 
   constructor(
     public navCtrl: NavController,
     public accountProvider: AccountProvider,
-    formBuilder: FormBuilder){
-
+    formBuilder: FormBuilder
+  ) {
+    //declare Input Form and Validators
     this.accountForm = formBuilder.group({
       accountName: [
         '',
@@ -31,7 +33,11 @@ export class AccountPage {
         Validators.compose([Validators.required])
       ]
     });
-    MyApp
+  }
+
+  // Call read Data from Database after Inoic is ready
+  ionViewDidLoad() {
+    this.getAccountList();
   }
 
   //open details page of selected category
@@ -41,57 +47,47 @@ export class AccountPage {
 
   //apply filter to list
   setFilteredItems() {
-    if(this.searchTerm.length > 0)
-    {
-      this.accountList = this.accountList.filter(item =>item.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
-      console.log(this.accountList);
+    if (this.searchTerm.length > 0) {
+      this.accountList = this.accountListFull.filter(item => item.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
     }
-    else
-    {
-      //Reload data
-      this.ionViewDidLoad();
+    else {
+      this.accountList = this.accountListFull;
     }
   }
 
-  ionViewDidLoad() {
+  // get Account List from Database Provider
+  getAccountList() {
     this.accountProvider.getAccountList().on("value", personListSnapshot => {
-      this.accountList = [];
+      this.accountListFull = [];
       personListSnapshot.forEach(personSnapshot => {
-        //console.log(personSnapshot.val().name + ' ' + personSnapshot.val().amount);
-        this.accountList.push(
+        this.accountListFull.push(
           new AccountEntry(
             personSnapshot.key,
             personSnapshot.val().name,
             personSnapshot.val().description)
         );
       });
-      this.accountList = this.accountList.sort(
+      this.accountListFull = this.accountListFull.sort(
         function (a, b) {
           if (a.name < b.name) return 1;
           if (a.name > b.name) return -1;
           return 0;
         }
       );
-      //console.log(this.accountList);
+      this.accountList = this.accountListFull;
     });
   }
 
+  // inserts a new Account to List and Database
   createNewEntry() {
-    if (!this.accountForm.valid) {
-      console.log(
-        `Form is not valid yet, current value: ${this.accountForm.value}`
-      );
-    } else {
-      this.accountProvider
-        .addAccountEntry(
-          new AccountEntry(
-            '',
-            this.accountForm.value.accountName,
-            this.accountForm.value.accountDescription
-           ))
-        .then((newBooking) => {
-          this.accountForm.reset();
-        });
-    }
+    this.accountProvider.addAccountEntry(
+      new AccountEntry(
+        '',
+        this.accountForm.value.accountName,
+        this.accountForm.value.accountDescription
+      )
+    ).then(() => {
+      this.accountForm.reset();
+    });
   }
 }

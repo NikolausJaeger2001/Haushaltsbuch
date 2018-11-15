@@ -7,43 +7,44 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>{{booking?.comment}}</ion-title>
+    <ion-title>Change Booking</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content >
+<ion-content padding>
+  <form [formGroup]="bookingForm" (submit)="saveBooking()">
+    <ion-item>
+      <ion-label stacked>Account</ion-label>
+      <ion-select formControlName="accountId" placeholder="Household" >
+        <ion-option *ngFor="let c of accountList" [value]="c.name">{{c.name}}</ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>Category</ion-label>
+      <ion-select formControlName="categories" placeholder="Work, Computer" multiple>
+        <ion-option *ngFor="let c of categoryList" [value]="c.name">{{c.name}}</ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>Comment</ion-label>
+      <ion-input formControlName="comment" type="text" placeholder="New Monitor for Homeoffice"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>Amount</ion-label>
+      <ion-input formControlName="amount" type="number" placeholder="125.99"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>Date</ion-label>
+      <ion-datetime formControlName="date" displayFormat="DD.MM.YYYY"
+                    pickerFormat="DD MMMM YYYY" placeholder="15.10.2018">
+      </ion-datetime>
+    </ion-item>
 
-  <div class="poster-wrapper">
-    <img *ngIf="backdrop" [src]="backdrop" alt="" width="100%">
-  </div>
+    <button ion-button block [disabled]="!bookingForm.valid">Save</button>
+  </form>
 
-  <div padding="">
-    <h3>{{booking?.comment}}</h3>
-
-    <small>{{booking?.accountId}}</small>
-    {{booking?.amount}}
-  </div>
-
-
-  <ion-item>
-    <ion-label stacked>Select new Account</ion-label>
-    <ion-select [(ngModel)]="accountId" [ngModelOptions]="{standalone: true}"
-                name="accountId" placeholder="Household" multiple="false">
-      <ion-option *ngFor="let c of accountList" [value]="c.name">{{c.name}}</ion-option>
-    </ion-select>
-  </ion-item>
-
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <button ion-button="" color="danger" block (click)="deleteBooking(booking)" block>Delete</button>
-
-        <button ion-button="" color="secondary" block (click)="saveBooking(booking)" block>Save</button>
-      </ion-col>
-
-    </ion-row>
-  </ion-grid>
+  <button ion-button="" color="danger" block (click)="deleteBooking()" block>Delete</button>
 
 </ion-content>

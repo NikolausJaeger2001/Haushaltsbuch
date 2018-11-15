@@ -1,46 +1,44 @@
 import { Injectable } from '@angular/core';
 import firebase from 'firebase/app';
 import {CategoryEntry} from "../../models/category-entry";
-import 'firebase/auth';
-import 'firebase/database';
-import 'firebase/storage';
 
-/*
-  Generated class for the BookingProvider provider.
 
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
+// this class is handling the categoriex in the firebase database
 @Injectable()
 export class CategoryProvider {
   public categoryListRef: firebase.database.Reference;
-  user: any;
 
+  // this constructor adds a function for updating local bookingListReference to the firebase changeAuthEvent
   constructor() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.user = user;
-        this.categoryListRef = firebase
-          .database()
-          .ref(`/user/${user.uid}/categoryList`);
+        this.categoryListRef = firebase.database().ref(`/user/${user.uid}/categoryList`);
       }
     });
   }
 
+  // this function returns the categoryList
   getCategoryList() : firebase.database.Reference {
     return this.categoryListRef;
   }
 
+  // this function adds a Category to the categoryList and stores it to the database
   addCategoryEntry(category: CategoryEntry): PromiseLike<any> {
     return this.categoryListRef.push({
-      id: category.id,
-      name: category.name,
+      name: category.name
     });
   }
 
-  //remove the given entry from the database
-  removeCategoryEntry(category: CategoryEntry) {
-    return this.categoryListRef.child(category.id).remove();
+  // this function updates a Category to the categoryList and stores it to the database
+  updateCategoryEntry(category: CategoryEntry): PromiseLike<any> {
+    return this.categoryListRef.child(category.key).set({
+      name: category.name
+    });
+  }
+
+  // this function delete a Category from the categoryList and deletes it on the database
+  removeCategoryEntry(category: CategoryEntry): PromiseLike<any> {
+    return this.categoryListRef.child(category.key).remove();
   }
 
 }
