@@ -4,12 +4,6 @@ import {AccountProvider} from "../../providers/account/account";
 import {AccountEntry} from "../../models/account-entry";
 import {AccountPage} from "../account/account";
 
-/**
- * Generated class for the MovieDetailPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
